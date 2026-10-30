@@ -154,8 +154,11 @@ async function fillDurations(list){
   return list;
 }
 
+const loading = {};
 async function loadMember(m, more){
   if (!getKey()) { document.getElementById("view").innerHTML = `<div class="status">위에서 API 키를 먼저 저장해 주세요.</div>`; return; }
+  if (loading[m + (more ? ":more" : "")]) return;
+  loading[m + (more ? ":more" : "")] = true;
   const btn = document.getElementById("more"); if (btn) btn.textContent = "불러오는 중…";
   try {
     let items = [];
@@ -174,7 +177,8 @@ async function loadMember(m, more){
     const unique = items.filter((v, i, arr) => !ids.has(v.id) && arr.findIndex(x => x.id === v.id) === i);
     await fillDurations(unique);
     const kept = unique.filter(v => !isShort(v) && isForMember(v, m));
-    cache[m] = cache[m].concat(kept).sort((a, b) => b.date.localeCompare(a.date));
+    const merged = cache[m].concat(kept);
+    cache[m] = merged.filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i).sort((a, b) => b.date.localeCompare(a.date));
     if (more) {
       const grid = document.getElementById("grid");
       if (grid) grid.insertAdjacentHTML("beforeend", kept.map(cardHTML).join(""));
@@ -184,6 +188,8 @@ async function loadMember(m, more){
     bindCards(document.getElementById("view"));
   } catch(e) {
     document.getElementById("view").innerHTML = `<div class="status">불러오지 못했습니다: ${esc(e.message)}</div>`;
+  } finally {
+    loading[m + (more ? ":more" : "")] = false;
   }
 }
 
