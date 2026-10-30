@@ -41,7 +41,7 @@ button.ghost{background:#eef;color:#445}
 <script>
 const MEMBERS = ["카르멘","지우","유하","스텔라","주은","에이나","이안","예온"];
 const KEY_NAME = "h2h_yt_key", FAV_NAME = "h2h_fav", PL_NAME = "h2h_playlists", ORDER_NAME = "h2h_order";
-let tab = "멤버";
+let tab = "멤버";     // 멤버 | 즐겨찾기 | 재생목록
 let member = "지우";
 let order = (localStorage.getItem(ORDER_NAME) || "date");
 let nextTokens = {}, cache = {};
@@ -110,6 +110,7 @@ function toVideo(it){
 }
 
 async function loadMember(m, more){
+  const grid = document.getElementById("grid");
   if (!more) { cache[m] = []; nextTokens[m] = null; }
   if (!getKey()) { document.getElementById("view").innerHTML = `<div class="status">위에서 API 키를 먼저 저장해 주세요.</div>`; return; }
   const btn = document.getElementById("more"); if (btn) btn.textContent = "불러오는 중…";
@@ -119,12 +120,9 @@ async function loadMember(m, more){
     const ids = new Set(cache[m].map(x => x.id));
     const items = data.items.map(toVideo).filter(v => !ids.has(v.id));
     cache[m] = cache[m].concat(items);
-    if (more) {
-      const grid = document.getElementById("grid");
-      if (grid) grid.insertAdjacentHTML("beforeend", items.map(cardHTML).join(""));
-      const b = document.getElementById("more");
-      if (b) { if (nextTokens[m]) b.textContent = "더 보기"; else b.remove(); }
-    } else render();
+    if (more && grid) grid.insertAdjacentHTML("beforeend", items.map(cardHTML).join(""));
+    else render();
+    if (more) { const b = document.getElementById("more"); if (b) { if (nextTokens[m]) b.textContent = "더 보기"; else b.remove(); } }
     bindCards(document.getElementById("view"));
   } catch(e) {
     document.getElementById("view").innerHTML = `<div class="status">불러오지 못했습니다: ${esc(e.message)}</div>`;
@@ -140,7 +138,8 @@ function render(){
 
   const view = document.getElementById("view");
   if (tab === "멤버") {
-    view.innerHTML = `<div class="filters">${MEMBERS.map(m=>`<button class="${m===member?"on":""}" data-m="${m}">${m}</button>`).join("")}</div><div id="memberBody"></div>`;
+    view.innerHTML = `<div class="filters">${MEMBERS.map(m=>`<button class="${m===member?"on":""}" data-m="${m}">${m}</button>`).join("")}</div>
+      <div id="memberBody"></div>`;
     view.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { member = b.dataset.m; render(); loadMember(member); });
     const body = document.getElementById("memberBody");
     const list = cache[member];
