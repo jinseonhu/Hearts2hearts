@@ -95,34 +95,70 @@ function findVideo(id){
   return favs().find(x => x.id === id);
 }
 
-async function search(m, pageToken){
-  const key = getKey();
-  const p = new URLSearchParams({part:"snippet", type:"video", maxResults:"25", q:`하츠투하츠 ${m} 직캠`, key, regionCode:"KR", relevanceLanguage:"ko", order});
-  if (pageToken) p.set("pageToken", pageToken);
-  const r = await fetch("https://www.googleapis.com/youtube/v3/search?" + p.toString());
+function parseDur(d){
+  const m = (d||"").match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  return m ? (+m[1]||0)*3600 + (+m[2]||0)*60 + (+m[3]||0) : 0;
+}
+function isShort(v){
+  return v.seconds <= 60 || /#?shorts|쇼츠/i.test(v.title);
+}
+const EXTRA_QUERIES = m => [`${m} 직캠 하투하`, `Hearts2Hearts ${m} fancam`];
+
+async function apiGet(path, params){
+  const p = new URLSearchParams({...params, key: getKey()});
+  const r = await fetch("https://www.googleapis.com/youtube/v3/" + path + "?" + p.toString());
   const data = await r.json();
   if (!r.ok) throw new Error(data.error && data.error.message ? data.error.message : "검색 실패");
   return data;
 }
+async function searchQuery(q, pageToken){
+  const params = {part:"snippet", type:"video", maxResults:"50", q, regionCode:"KR", relevanceLanguage:"ko", order};
+  if (pageToken) params.pageToken = pageToken;
+  return apiGet("search", params);
+}
 function toVideo(it){
   const sn = it.snippet;
-  return { id: it.id.videoId, title: sn.title, channel: sn.channelTitle, date: (sn.publishedAt || "").slice(0,10), thumb: (sn.thumbnails.medium || sn.thumbnails.default || {}).url || "" };
+  return { id: it.id.videoId, title: sn.title, channel: sn.channelTitle, date: (sn.publishedAt || "").slice(0,10), thumb: (sn.thumbnails.medium || sn.thumbnails.default || {}).url || "", seconds: 0 };
+}
+async function fillDurations(list){
+  const need = list.filter(v => !v.seconds);
+  for (let i = 0; i < need.length; i += 50) {
+    const chunk = need.slice(i, i+50);
+    const data = await apiGet("videos", {part:"contentDetails", id: chunk.map(v=>v.id).join(",")});
+    const map = {};
+    data.items.forEach(it => map[it.id] = parseDur(it.contentDetails.duration));
+    chunk.forEach(v => v.seconds = map[v.id] || 0);
+  }
+  return list;
 }
 
 async function loadMember(m, more){
-  const grid = document.getElementById("grid");
-  if (!more) { cache[m] = []; nextTokens[m] = null; }
   if (!getKey()) { document.getElementById("view").innerHTML = `<div class="status">위에서 API 키를 먼저 저장해 주세요.</div>`; return; }
   const btn = document.getElementById("more"); if (btn) btn.textContent = "불러오는 중…";
   try {
-    const data = await search(m, more ? nextTokens[m] : undefined);
-    nextTokens[m] = data.nextPageToken || null;
+    let items = [];
+    if (!more) {
+      cache[m] = []; nextTokens[m] = null;
+      const queries = [`하츠투하츠 ${m} 직캠`, ...EXTRA_QUERIES(m)];
+      const results = await Promise.all(queries.map((q, i) => searchQuery(q, undefined).catch(e => i === 0 ? Promise.reject(e) : {items:[], nextPageToken:null})));
+      nextTokens[m] = results[0].nextPageToken || null;
+      items = results.flatMap(r => r.items.map(toVideo));
+    } else {
+      const data = await searchQuery(`하츠투하츠 ${m} 직캠`, nextTokens[m]);
+      nextTokens[m] = data.nextPageToken || null;
+      items = data.items.map(toVideo);
+    }
     const ids = new Set(cache[m].map(x => x.id));
-    const items = data.items.map(toVideo).filter(v => !ids.has(v.id));
-    cache[m] = cache[m].concat(items);
-    if (more && grid) grid.insertAdjacentHTML("beforeend", items.map(cardHTML).join(""));
-    else render();
-    if (more) { const b = document.getElementById("more"); if (b) { if (nextTokens[m]) b.textContent = "더 보기"; else b.remove(); } }
+    const unique = items.filter((v, i, arr) => !ids.has(v.id) && arr.findIndex(x => x.id === v.id) === i);
+    await fillDurations(unique);
+    const kept = unique.filter(v => !isShort(v));
+    cache[m] = cache[m].concat(kept).sort((a, b) => b.date.localeCompare(a.date));
+    if (more) {
+      const grid = document.getElementById("grid");
+      if (grid) grid.insertAdjacentHTML("beforeend", kept.map(cardHTML).join(""));
+      const b = document.getElementById("more");
+      if (b) { if (nextTokens[m]) b.textContent = "더 보기"; else b.remove(); }
+    } else render();
     bindCards(document.getElementById("view"));
   } catch(e) {
     document.getElementById("view").innerHTML = `<div class="status">불러오지 못했습니다: ${esc(e.message)}</div>`;
