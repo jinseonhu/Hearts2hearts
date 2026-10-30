@@ -1,0 +1,17 @@
+{
+  "name": "하투하 일정 모아보기",
+  "short_name": "하투하 일정",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7f7fb",
+  "theme_color": "#5b6cff",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
