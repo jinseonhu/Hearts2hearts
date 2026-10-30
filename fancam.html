@@ -69,12 +69,38 @@ button:active{transform:scale(.97)}
 </main>
 <div id="tabs"></div>
 <script>
-const MEMBERS = ["카르멘","지우","유하","스텔라","주은","에이나","이안","예온"];
-const KEY_NAME = "h2h_yt_key", FAV_NAME = "h2h_fav", PL_NAME = "h2h_playlists", ORDER_NAME = "h2h_order";
-let tab = "멤버";     // 멤버 | 즐겨찾기 | 재생목록
-let member = "지우";
+const GROUPS = {
+  "하츠투하츠": {ko:"하츠투하츠", en:"Hearts2Hearts", members:["카르멘","지우","유하","스텔라","주은","에이나","이안","예온"]},
+  "키키": {ko:"키키", en:"KiiiKiii", members:["하음"]},
+  "뉴진스": {ko:"뉴진스", en:"NewJeans", members:["민지","하니","해린"]},
+  "에스파": {ko:"에스파", en:"aespa", members:["윈터","카리나"]},
+  "엔믹스": {ko:"엔믹스", en:"NMIXX", members:["지우","규진","설윤"]}
+};
+const ALIASES = {
+  "카르멘": ["카르멘","karmen","carmen"],
+  "지우": ["지우","jiwoo"],
+  "유하": ["유하","yuha"],
+  "스텔라": ["스텔라","stella"],
+  "주은": ["주은","juun","joo eun","jooeun"],
+  "에이나": ["에이나","ain"],
+  "이안": ["이안","ian"],
+  "예온": ["예온","yeon","yewon"],
+  "하음": ["하음","haeum"],
+  "민지": ["민지","minji"],
+  "하니": ["하니","hanni"],
+  "해린": ["해린","haerin"],
+  "윈터": ["윈터","winter"],
+  "카리나": ["카리나","karina"],
+  "규진": ["규진","kyujin"],
+  "설윤": ["설윤","sullyoon"]
+};
+const KEY_NAME = "h2h_yt_key", FAV_NAME = "h2h_fav", PL_NAME = "h2h_playlists", ORDER_NAME = "h2h_order", GROUP_NAME = "h2h_group";
+let tab = "멤버";
+let group = (()=>{ try { return localStorage.getItem(GROUP_NAME) || "하츠투하츠"; } catch(e){ return "하츠투하츠"; } })();
+if (!GROUPS[group]) group = "하츠투하츠";
+let member = GROUPS[group].members[0];
 let order = (localStorage.getItem(ORDER_NAME) || "date");
-let nextTokens = {}, cache = {};
+let nextTokens = {}, cache = {}, loading = {};
 
 const store = {
   get(name, def){ try { return JSON.parse(localStorage.getItem(name)) ?? def; } catch(e){ return def; } },
@@ -85,6 +111,7 @@ function getKey(){ try { return localStorage.getItem(KEY_NAME) || ""; } catch(e)
 function favs(){ return store.get(FAV_NAME, []); }
 function playlists(){ return store.get(PL_NAME, {}); }
 function isFav(id){ return favs().some(f => f.id === id); }
+function ck(m){ return group + "/" + m; }
 
 function toggleFav(v){
   let list = favs();
@@ -98,14 +125,14 @@ function cardHTML(v){
   const fav = isFav(v.id);
   const pls = Object.keys(playlists());
   const plSelect = pls.length
-    ? `<select class="plsel" data-id="${esc(v.id)}" style="margin:0;width:auto;font-size:12px;padding:5px"><option value="">재생목록에 추가</option>${pls.map(p=>`<option>${esc(p)}</option>`).join("")}</select>`
+    ? `<select class="plsel" data-id="${esc(v.id)}"><option value="">재생목록에 추가</option>${pls.map(p=>`<option>${esc(p)}</option>`).join("")}</select>`
     : "";
   return `<div class="card">
     <a class="thumb" href="https://www.youtube.com/watch?v=${esc(v.id)}" target="_blank" rel="noopener">
       <img src="${esc(v.thumb)}" alt=""><div class="t">${esc(v.title)}</div></a>
     <div class="c">${esc(v.channel)} · ${esc(v.date)}</div>
     <div class="acts">
-      <button class="ghost fav" data-v='${esc(JSON.stringify(v))}'>${fav ? "★ 즐겨찾기 해제" : "☆ 즐겨찾기"}</button>
+      <button class="fav" data-v='${esc(JSON.stringify(v))}'>${fav ? "★ 즐겨찾기 해제" : "☆ 즐겨찾기"}</button>
       ${plSelect}
     </div></div>`;
 }
@@ -132,16 +159,6 @@ function parseDur(d){
 function isShort(v){
   return v.seconds <= 60 || /#?shorts|쇼츠/i.test(v.title);
 }
-const ALIASES = {
-  "카르멘": ["카르멘","karmen","carmen"],
-  "지우": ["지우","jiwoo"],
-  "유하": ["유하","yuha"],
-  "스텔라": ["스텔라","stella"],
-  "주은": ["주은","juun","joo eun","jooeun"],
-  "에이나": ["에이나","ain"],
-  "이안": ["이안","ian"],
-  "예온": ["예온","yeon","yewon"]
-};
 function escRe(t){ return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function mentions(title, name){
   return (ALIASES[name] || [name]).some(a => {
@@ -152,9 +169,12 @@ function mentions(title, name){
 function isForMember(v, m){
   const t = v.title;
   if (!mentions(t, m)) return false;
-  return !Object.keys(ALIASES).some(o => o !== m && mentions(t, o));
+  return !GROUPS[group].members.some(o => o !== m && mentions(t, o));
 }
-const EXTRA_QUERIES = m => [`${m} 직캠 하투하`, `Hearts2Hearts ${m} fancam`];
+function queriesFor(m){
+  const g = GROUPS[group];
+  return [`${g.ko} ${m} 직캠`, `${m} 직캠 ${g.ko}`, `${g.en} ${m} fancam`];
+}
 
 async function apiGet(path, params){
   const p = new URLSearchParams({...params, key: getKey()});
@@ -184,42 +204,42 @@ async function fillDurations(list){
   return list;
 }
 
-const loading = {};
 async function loadMember(m, more){
+  const key = ck(m) + (more ? ":more" : "");
   if (!getKey()) { document.getElementById("view").innerHTML = `<div class="status">위에서 API 키를 먼저 저장해 주세요.</div>`; return; }
-  if (loading[m + (more ? ":more" : "")]) return;
-  loading[m + (more ? ":more" : "")] = true;
+  if (loading[key]) return;
+  loading[key] = true;
   const btn = document.getElementById("more"); if (btn) btn.textContent = "불러오는 중…";
   try {
     let items = [];
     if (!more) {
-      cache[m] = []; nextTokens[m] = null;
-      const queries = [`하츠투하츠 ${m} 직캠`, ...EXTRA_QUERIES(m)];
-      const results = await Promise.all(queries.map((q, i) => searchQuery(q, undefined).catch(e => i === 0 ? Promise.reject(e) : {items:[], nextPageToken:null})));
-      nextTokens[m] = results[0].nextPageToken || null;
+      cache[ck(m)] = []; nextTokens[ck(m)] = null;
+      const qs = queriesFor(m);
+      const results = await Promise.all(qs.map((q, i) => searchQuery(q, undefined).catch(e => i === 0 ? Promise.reject(e) : {items:[], nextPageToken:null})));
+      nextTokens[ck(m)] = results[0].nextPageToken || null;
       items = results.flatMap(r => r.items.map(toVideo));
     } else {
-      const data = await searchQuery(`하츠투하츠 ${m} 직캠`, nextTokens[m]);
-      nextTokens[m] = data.nextPageToken || null;
+      const data = await searchQuery(queriesFor(m)[0], nextTokens[ck(m)]);
+      nextTokens[ck(m)] = data.nextPageToken || null;
       items = data.items.map(toVideo);
     }
-    const ids = new Set(cache[m].map(x => x.id));
+    const ids = new Set((cache[ck(m)] || []).map(x => x.id));
     const unique = items.filter((v, i, arr) => !ids.has(v.id) && arr.findIndex(x => x.id === v.id) === i);
     await fillDurations(unique);
     const kept = unique.filter(v => !isShort(v) && isForMember(v, m));
-    const merged = cache[m].concat(kept);
-    cache[m] = merged.filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i).sort((a, b) => b.date.localeCompare(a.date));
+    const merged = (cache[ck(m)] || []).concat(kept);
+    cache[ck(m)] = merged.filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i).sort((a, b) => b.date.localeCompare(a.date));
     if (more) {
       const grid = document.getElementById("grid");
       if (grid) grid.insertAdjacentHTML("beforeend", kept.map(cardHTML).join(""));
       const b = document.getElementById("more");
-      if (b) { if (nextTokens[m]) b.textContent = "더 보기"; else b.remove(); }
+      if (b) { if (nextTokens[ck(m)]) b.textContent = "더 보기"; else b.remove(); }
     } else render();
     bindCards(document.getElementById("view"));
   } catch(e) {
     document.getElementById("view").innerHTML = `<div class="status">불러오지 못했습니다: ${esc(e.message)}</div>`;
   } finally {
-    loading[m + (more ? ":more" : "")] = false;
+    loading[key] = false;
   }
 }
 
@@ -232,14 +252,21 @@ function render(){
 
   const view = document.getElementById("view");
   if (tab === "멤버") {
-    view.innerHTML = `<div class="filters">${MEMBERS.map(m=>`<button class="${m===member?"on":""}" data-m="${m}">${m}</button>`).join("")}</div>
+    const members = GROUPS[group].members;
+    view.innerHTML = `<div class="filters" id="groupbar">${Object.keys(GROUPS).map(g=>`<button class="${g===group?"on":""}" data-g="${esc(g)}">${esc(g)}</button>`).join("")}</div>
+      <div class="filters">${members.map(m=>`<button class="${m===member?"on":""}" data-m="${m}">${m}</button>`).join("")}</div>
       <div id="memberBody"></div>`;
+    view.querySelectorAll("[data-g]").forEach(b => b.onclick = () => {
+      group = b.dataset.g; member = GROUPS[group].members[0];
+      try { localStorage.setItem(GROUP_NAME, group); } catch(e){}
+      render(); loadMember(member);
+    });
     view.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { member = b.dataset.m; render(); loadMember(member); });
     const body = document.getElementById("memberBody");
-    const list = cache[member];
+    const list = cache[ck(member)];
     if (!list) { body.innerHTML = `<div class="status">불러오는 중…</div>`; loadMember(member); return; }
     if (!list.length) { body.innerHTML = `<div class="status">검색 결과가 없습니다.</div>`; return; }
-    body.innerHTML = `<div class="grid" id="grid">${list.map(cardHTML).join("")}</div>${nextTokens[member] ? `<button class="more ghost" id="more">더 보기</button>` : ""}`;
+    body.innerHTML = `<div class="grid" id="grid">${list.map(cardHTML).join("")}</div>${nextTokens[ck(member)] ? `<button class="more" id="more">더 보기</button>` : ""}`;
     const more = document.getElementById("more"); if (more) more.onclick = () => loadMember(member, true);
     bindCards(view);
   } else if (tab === "즐겨찾기") {
@@ -250,11 +277,11 @@ function render(){
     const pl = playlists();
     const names = Object.keys(pl);
     view.innerHTML = `
-      <div class="box"><input id="plname" placeholder="새 재생목록 이름 (예: 지우 무대 모음)"/>
-      <button id="plnew" style="margin-top:8px">재생목록 만들기</button></div>
+      <div class="plbox"><input id="plname" placeholder="새 재생목록 이름 (예: 지우 무대 모음)"/>
+      <button id="plnew">만들기</button></div>
       ${names.length ? names.map(n => `<div class="pl"><h3>${esc(n)} (${pl[n].length})</h3>
           <div class="grid">${pl[n].map(v => cardHTML(v)).join("")}</div>
-          <button class="ghost plrm" data-n="${esc(n)}" style="margin-top:8px">재생목록 삭제</button></div>`).join("") : `<div class="status">재생목록이 없습니다.</div>`}`;
+          <button class="plrm" data-n="${esc(n)}">재생목록 삭제</button></div>`).join("") : `<div class="status">재생목록이 없습니다.</div>`}`;
     document.getElementById("plnew").onclick = () => {
       const n = document.getElementById("plname").value.trim();
       if (!n) return;
