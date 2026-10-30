@@ -215,6 +215,12 @@ async function loadMember(m, more){
   try {
     let items = [];
     if (!more) {
+      const saved = store.get("h2h_cache/" + ck(m) + "/" + order, null);
+      if (saved && Date.now() - saved.t < 12*60*60*1000) {
+        cache[ck(m)] = saved.items; nextTokens[ck(m)] = saved.next;
+        render(); bindCards(document.getElementById("view"));
+        return;
+      }
       cache[ck(m)] = []; nextTokens[ck(m)] = null;
       const qs = queriesFor(m);
       const results = await Promise.all(qs.map((q, i) => searchQuery(q, undefined).catch(e => i === 0 ? Promise.reject(e) : {items:[], nextPageToken:null})));
@@ -231,6 +237,7 @@ async function loadMember(m, more){
     const kept = unique.filter(v => !isShort(v) && isForMember(v, m));
     const merged = (cache[ck(m)] || []).concat(kept);
     cache[ck(m)] = merged.filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i).sort((a, b) => b.date.localeCompare(a.date));
+    if (!more) store.set("h2h_cache/" + ck(m) + "/" + order, {t: Date.now(), items: cache[ck(m)], next: nextTokens[ck(m)]});
     if (more) {
       const grid = document.getElementById("grid");
       if (grid) grid.insertAdjacentHTML("beforeend", kept.map(cardHTML).join(""));
