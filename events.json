@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01",
+  "updated": "2026-11-08",
   "events": [
     {
       "date": "2026-10-29",
@@ -43,28 +43,43 @@
     },
     {
       "date": "2026-11-20",
-      "title": "2026 MAMA 오사카",
+      "title": "2026 MAMA AWARDS 오사카 (MAMA)",
       "type": "시상식",
-      "place": "오사카 (일본)",
-      "status": "팬 달력 기준, 공식 확인 필요",
-      "source": "",
+      "place": "교세라 돔 오사카 (일본)",
+      "status": "기사 확인 (11/20 CHAPTER 1 출연 라인업에 하투하 포함, 복수 매체 보도)",
+      "source": "https://www.soompi.com/article/1877509wpp/2026-mama-awards-announces-first-lineup",
       "ticket_time": "미확인",
       "ticket_site": "미확인",
       "ticket_url": "",
-      "notes": "판매처와 시간을 공식 공지에서 확인하세요."
+      "notes": "11/20~21 이틀간 진행. 하투하는 11/20 CHAPTER 1 출연 (InMusic 10/15, Esquire Korea 10/21 라인업 보도). 티켓 정보 미확인.",
+      "end": "2026-11-21"
     },
     {
       "date": "2026-11-22",
       "end": "2026-11-23",
-      "title": "S2U Japan 1st Fan Event 'READY! S2U'",
+      "title": "JAPAN 1st Fan Event 'READY! S2U'",
       "type": "팬 이벤트",
-      "place": "아리아케 아레나 (일본)",
-      "status": "나무위키 기준, 공식 확인 필요",
-      "source": "https://namu.wiki/w/Hearts2Hearts/%EA%B3%B5%EC%97%B0%20%EB%B0%8F%20%ED%96%89%EC%82%AC",
-      "ticket_time": "미확인",
-      "ticket_site": "미확인 (팬클럽 공지 확인 필요)",
-      "ticket_url": "",
-      "notes": "위버스 공지를 확인하세요."
+      "place": "有明アリーナ / 아리아케 아레나 (도쿄, 일본)",
+      "status": "티켓 판매처 페이지 확인 (11/22 18:00 시작, 11/23 16:00 시작). 공식 판매 일정 확인 필요",
+      "source": "https://www.japanconcerttickets.com/event/hearts2hearts-in-tokyo-2026-11-22/",
+      "ticket_time": "미확인 (공식 공지: https://hearts2heartsofficial.jp/news/20260920/ 미확인)",
+      "ticket_site": "공식 홈페이지 (hearts2heartsofficial.jp)",
+      "ticket_url": "https://hearts2heartsofficial.jp/",
+      "notes": "11/22 (일) 개장 17:00 / 시작 18:00, 11/23 (월) 개장 15:00 / 시작 16:00. 공식 가격 JPY 12,800 (japanconcerttickets 표기). 판매 일정은 공식 공지 미확인. 티켓 상품 페이지 URL 미확인으로 메인 사이트 링크를 넣었습니다. 리셀(Viagogo, ticket.co.jp, ticketjam)은 참고용입니다.",
+      "ticket_notice": "https://hearts2heartsofficial.jp/news/20260920/"
+    },
+    {
+      "date": "2026-11-28",
+      "title": "Winter Special Live at UNIVERSAL STUDIOS JAPAN (Osaka)",
+      "type": "공연",
+      "place": "유니버설 스튜디오 재팬 그라멜시 파크 (오사카, 일본)",
+      "status": "티켓 판매처 페이지 확인 (11/28 11:00 시작). 공식 판매 일정 확인 필요",
+      "source": "https://www.japanconcerttickets.com/event/hearts2hearts-in-osaka-2026-11-28/",
+      "ticket_time": "미확인 (공식 공지: https://hearts2heartsofficial.jp/news/20260925/ 미확인)",
+      "ticket_site": "공식 홈페이지 (hearts2heartsofficial.jp)",
+      "ticket_url": "https://hearts2heartsofficial.jp/",
+      "notes": "개장 9:45 / 시작 11:00. 1일 스튜디오 패스 포함 티켓만 판매 (단독 라이브 티켓 없음). 공식 가격 JPY 12,900. 티켓 상품 페이지 URL 미확인으로 메인 사이트 링크를 넣었습니다.",
+      "ticket_notice": "https://hearts2heartsofficial.jp/news/20260925/"
     },
     {
       "date": "2026-12-05",
