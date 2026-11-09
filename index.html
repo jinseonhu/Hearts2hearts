@@ -32,6 +32,10 @@
     .detail p { margin: 0; }
     .detail a { display: inline-block; margin-top: 4px; background: #5b6cff; color: #fff; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 13px; }
     .hint { font-size: 11px; color: #999; }
+    .past .date { color: #999; }
+    .card.past .title { color: #777; }
+    .past-toggle { display: block; width: 100%; margin: 16px 0 8px; padding: 12px; border: 1px dashed #aab; background: #fff; border-radius: 12px; color: #5b6cff; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .past-heading { font-size: 13px; color: #888; margin: 8px 0; font-weight: 600; }
     .empty { text-align: center; color: #999; padding: 40px 0; }
     .fancam-btn { display: inline-block; margin-top: 12px; background: #fff; color: #5b6cff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 9px 16px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
   </style>
@@ -50,6 +54,7 @@
     let all = [];
     let currentType = "전체";
     let openKey = null;
+    let showPast = false;
 
     function isOfficial(status) {
       return status.indexOf("공식") !== -1 && status.indexOf("확인 필요") === -1;
@@ -83,42 +88,57 @@
         </div>`;
     }
 
-    function render() {
-      const list = document.getElementById("list");
-      const today = new Date().toISOString().slice(0, 10);
-      const items = all
-        .filter(e => e.date >= today || e.date === "2026-10-29")
-        .filter(e => currentType === "전체" || e.type === currentType)
-        .sort((a, b) => a.date.localeCompare(b.date));
-
-      if (items.length === 0) {
-        list.innerHTML = '<div class="empty">표시할 일정이 없습니다.</div>';
-        return;
-      }
-
-      list.innerHTML = items.map((e, i) => {
-        const key = e.date + "|" + e.title;
-        const official = isOfficial(e.status);
-        const isOpen = openKey === key;
-        return `
-          <div class="card" data-key="${esc(key)}">
-            <div class="date">${esc(e.date)}</div>
+    function cardHTML(e, past) {
+      const key = e.date + "|" + e.title;
+      const official = isOfficial(e.status);
+      const isOpen = openKey === key;
+      return `
+          <div class="card${past ? " past" : ""}" data-key="${esc(key)}">
+            <div class="date">${esc(e.date)}${e.end ? " ~ " + esc(e.end) : ""}</div>
             <div class="title">${esc(e.title)}</div>
             <div class="meta">${esc(e.type)} · ${esc(e.place)}</div>
             <span class="badge ${official ? "official" : ""}">${esc(e.status)}</span>
             <div class="detail ${isOpen ? "open" : ""}">${isOpen ? detailHTML(e) : ""}</div>
           </div>`;
-      }).join("");
-
-      list.querySelectorAll(".card").forEach(card => {
-        card.addEventListener("click", ev => {
-          if (ev.target.tagName === "A") return;
-          const key = card.dataset.key;
-          openKey = openKey === key ? null : key;
-          render();
-        });
-      });
     }
+
+    function render() {
+      const list = document.getElementById("list");
+      const today = new Date().toISOString().slice(0, 10);
+      const filtered = all.filter(e => currentType === "전체" || e.type === currentType);
+      const endOf = e => e.end || e.date;
+      const upcoming = filtered.filter(e => endOf(e) >= today)
+        .sort((a, b) => a.date.localeCompare(b.date));
+      const past = filtered.filter(e => endOf(e) < today)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      let html = upcoming.length
+        ? upcoming.map(e => cardHTML(e, false)).join("")
+        : '<div class="empty">예정된 일정이 없습니다.</div>';
+
+      if (past.length) {
+        html += `<button class="past-toggle" id="pastToggle">${showPast ? "지난 일정 숨기기 ▲" : "지난 일정 보기 (" + past.length + "개) ▼"}</button>`;
+        if (showPast) {
+          html += `<div class="past-heading">지난 일정</div>` + past.map(e => cardHTML(e, true)).join("");
+        }
+      }
+      list.innerHTML = html;
+    }
+
+    document.getElementById("list").addEventListener("click", ev => {
+      if (ev.target.id === "pastToggle") {
+        showPast = !showPast;
+        openKey = null;
+        render();
+        return;
+      }
+      if (ev.target.tagName === "A") return;
+      const card = ev.target.closest(".card");
+      if (!card) return;
+      const key = card.dataset.key;
+      openKey = openKey === key ? null : key;
+      render();
+    });
 
     function renderFilters() {
       const types = ["전체", ...new Set(all.map(e => e.type))];
