@@ -1,6 +1,58 @@
 {
-  "updated": "2026-11-08",
+  "updated": "2026-11-09",
   "events": [
+    {
+      "date": "2025-07-16",
+      "end": "2025-08-10",
+      "title": "바레블리스(Barenbliss) 인도네시아 앰배서더 캠페인 'We're connected!'",
+      "type": "팝업·콜라보",
+      "place": "인도네시아 뷰티 매장 (포토존)",
+      "status": "기사 확인 (2025년 캠페인, 지난 일정)",
+      "source": "https://www.marketing-interactive.com/barenbliss-taps-hearts2hearts-to-drive-k-pop-fuelled-beauty-movement-in-indonesia",
+      "ticket_time": "해당 없음 (구매 혜택, 기간 종료)",
+      "ticket_site": "뷰티 매장 / Shopee (첫 주 독점)",
+      "ticket_url": "",
+      "notes": "스타 글레이징 스틸 립세린 구매 시 하츠투하츠 포토카드 랜덤 증정. 2025년 8월 10일 종료."
+    },
+    {
+      "date": "2026-06-23",
+      "end": "2026-07-01",
+      "title": "Hearts2Hearts 2nd Mini Album 'Lemon Tang' POP-UP",
+      "type": "팝업·콜라보",
+      "place": "더현대 서울 B1 이벤트 플라자 (서울 영등포구)",
+      "status": "공식 팝업 안내 확인 (지난 일정)",
+      "source": "https://world.nol.com/en/content/festas/019ed2e6-59c0-7c5b-a4cf-4784fe4609f2",
+      "ticket_time": "온라인 사전 예약 또는 현장 예약 (첫 회차 S2U 팬클럽 우선)",
+      "ticket_site": "NOL 월드 / 크리에이트립 (사전 예약)",
+      "ticket_url": "",
+      "notes": "판매 기간 종료. 예약 상품 페이지 URL은 확인하지 못했습니다."
+    },
+    {
+      "date": "2026-07-02",
+      "end": "2026-07-31",
+      "title": "벤슨 x 하츠투하츠 '레몬탱' 아이스크림 콜라보",
+      "type": "팝업·콜라보",
+      "place": "벤슨 전국 18개 매장 / 벤슨 크리머리 서울 (압구정)",
+      "status": "기사 확인 (지난 일정)",
+      "source": "https://news.mtn.co.kr/news-detail/2026070215250828045",
+      "ticket_time": "해당 없음 (판매 기간 종료)",
+      "ticket_site": "벤슨 매장 (현장 판매)",
+      "ticket_url": "",
+      "notes": "맛 판매 7/31까지, 크리머리 서울 팝업 7/12까지였습니다. 굿즈 3종(키링, 티 코스터, 핀배지)과 멤버 전원 사인 CD 추첨 이벤트가 있었습니다."
+    },
+    {
+      "date": "2026-07-02",
+      "end": "2026-07-12",
+      "title": "무신사 x 하츠투하츠 '레몬탱' 의류 콜라보 (팝업·MD 사전 예약)",
+      "type": "팝업·콜라보",
+      "place": "무신사 메가스토어 성수 (팝업) / 무신사 온라인 스토어",
+      "status": "기사 확인 (지난 일정)",
+      "source": "https://m.ddaily.co.kr/page/view/2026070109162601256",
+      "ticket_time": "MD 사전 예약 7/2~7/12 (팝업은 7/7까지)",
+      "ticket_site": "무신사 온라인 스토어",
+      "ticket_url": "",
+      "notes": "사전 예약 종료. 의류 판매 지속 여부는 확인하지 못했습니다. 예약 상품 페이지 URL은 확인하지 못했습니다."
+    },
     {
       "date": "2026-10-29",
       "title": "연세대학교 축제 무대 (RUDE!)",
