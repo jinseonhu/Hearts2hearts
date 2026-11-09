@@ -15,6 +15,32 @@
       "notes": "스타 글레이징 스틸 립세린 구매 시 하츠투하츠 포토카드 랜덤 증정. 2025년 8월 10일 종료."
     },
     {
+      "date": "2025-07-21",
+      "end": "2025-07-27",
+      "title": "Teenieping X Hearts2Hearts 공식 굿즈 선주문 (Weverse Global)",
+      "type": "굿즈",
+      "place": "위버스 샵 (온라인)",
+      "status": "공식 공지 확인 (지난 일정)",
+      "source": "https://shop.weverse.io/shop/KRW/artists/213/notices/8681",
+      "ticket_time": "구매 기간 2025.7.21 10:00~품절 시까지 (선물 이벤트 ~7/27)",
+      "ticket_site": "위버스 샵",
+      "ticket_url": "https://shop.weverse.io/shop/USD/artists/213/categories/5705?subCategoryId=5905",
+      "notes": "2025년 공지입니다. 2025.7.29 배송 시작. 5만 원 이상 구매 시 선물 이벤트. 현재 판매 여부는 확인하지 못했습니다. 2025년 일정이라 참고용입니다."
+    },
+    {
+      "date": "2026-02-21",
+      "end": "2026-02-22",
+      "title": "Hearts2Hearts 1st Fan Meeting 'HEARTS 2 HOUSE'",
+      "type": "팬미팅",
+      "place": "올림픽홀, 올림픽공원 (서울)",
+      "status": "공식 발표 확인 (지난 일정, 전석 매진)",
+      "source": "https://world.nol.com/content/festas/019b96c0-ee0e-7f96-bce7-393b389af3cd",
+      "ticket_time": "매진",
+      "ticket_site": "NOL 월드 (매진)",
+      "ticket_url": "",
+      "notes": "첫 팬미팅 2026.2.21~22. 전석 매진되었습니다. 가격과 예매 상품 페이지는 확인하지 못했습니다."
+    },
+    {
       "date": "2026-06-23",
       "end": "2026-07-01",
       "title": "Hearts2Hearts 2nd Mini Album 'Lemon Tang' POP-UP",
@@ -125,12 +151,12 @@
       "title": "Winter Special Live at UNIVERSAL STUDIOS JAPAN (Osaka)",
       "type": "공연",
       "place": "유니버설 스튜디오 재팬 그라멜시 파크 (오사카, 일본)",
-      "status": "티켓 판매처 페이지 확인 (11/28 11:00 시작). 공식 판매 일정 확인 필요",
-      "source": "https://www.japanconcerttickets.com/event/hearts2hearts-in-osaka-2026-11-28/",
-      "ticket_time": "미확인 (공식 공지: https://hearts2heartsofficial.jp/news/20260925/ 미확인)",
-      "ticket_site": "공식 홈페이지 (hearts2heartsofficial.jp)",
+      "status": "공식 발표 확인 (USJ·S2U 재팬 공지, 11/28 11:00 시작). 일반 판매 일정 미확인",
+      "source": "https://hearts2heartsofficial.jp/news/20260925/",
+      "ticket_time": "S2U 재팬 선행 9/25 12:00~10/12 23:59 (종료, 10/15 추첨 발표). 일반 판매 미확인",
+      "ticket_site": "로손티켓 (S2U 재팬 팬클럽 선행)",
       "ticket_url": "https://hearts2heartsofficial.jp/",
-      "notes": "개장 9:45 / 시작 11:00. 1일 스튜디오 패스 포함 티켓만 판매 (단독 라이브 티켓 없음). 공식 가격 JPY 12,900. 티켓 상품 페이지 URL 미확인으로 메인 사이트 링크를 넣었습니다.",
+      "notes": "출연: Hearts2Hearts. 개장 9:45 / 시작 11:00. 1일 스튜디오 패스 포함 12,900엔(세금 포함), 1인 최대 4매, 스탠딩 블록 지정. 선행 기간은 종료되었습니다. 일반 판매 일정은 확인하지 못했습니다. 공식 USJ 안내: https://www.usj.co.jp/web/ja/jp/corporate-partners/news/2026/0925",
       "ticket_notice": "https://hearts2heartsofficial.jp/news/20260925/"
     },
     {
