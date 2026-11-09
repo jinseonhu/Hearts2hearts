@@ -7,54 +7,198 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-512.png" type="image/png">
   <link rel="apple-touch-icon" href="icon-512.png">
-  <meta name="theme-color" content="#5b6cff">
+  <meta name="theme-color" content="#6c5cff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="하투하 일정">
   <style>
-    body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 0; background: #f7f7fb; color: #222; }
-    header { background: #5b6cff; color: #fff; padding: 16px 20px; }
-    header h1 { margin: 0; font-size: 20px; }
-    header p { margin: 4px 0 0; font-size: 13px; opacity: .9; }
-    main { max-width: 720px; margin: 0 auto; padding: 16px; }
-    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .filters button { border: 1px solid #ccd; background: #fff; border-radius: 16px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
-    .filters button.active { background: #5b6cff; color: #fff; border-color: #5b6cff; }
-    .card { background: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); cursor: pointer; }
-    .card:hover { box-shadow: 0 2px 6px rgba(0,0,0,.12); }
-    .date { font-weight: 700; color: #5b6cff; font-size: 14px; }
-    .title { font-size: 16px; margin: 4px 0; font-weight: 600; }
-    .meta { font-size: 13px; color: #666; }
-    .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #eef; color: #445; margin-top: 6px; }
-    .badge.official { background: #e3f7e8; color: #1b6b35; }
-    .detail { display: none; margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px; font-size: 14px; line-height: 1.6; }
-    .detail.open { display: block; }
-    .detail h4 { margin: 10px 0 2px; font-size: 13px; color: #5b6cff; }
-    .detail p { margin: 0; }
-    .detail a { display: inline-block; margin-top: 4px; background: #5b6cff; color: #fff; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 13px; }
-    .hint { font-size: 11px; color: #999; }
-    .past .date { color: #999; }
-    .card.past .title { color: #777; }
-    .past-toggle { display: block; width: 100%; margin: 16px 0 8px; padding: 12px; border: 1px dashed #aab; background: #fff; border-radius: 12px; color: #5b6cff; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .past-heading { font-size: 13px; color: #888; margin: 8px 0; font-weight: 600; }
-    .empty { text-align: center; color: #999; padding: 40px 0; }
-    .fancam-btn { display: inline-block; margin-top: 12px; background: #fff; color: #5b6cff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 9px 16px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    :root {
+      --bg: #f5f4fb;
+      --surface: #ffffff;
+      --text: #1d1b2e;
+      --muted: #6e6a85;
+      --line: #e7e5f2;
+      --brand: #6c5cff;
+      --brand-2: #ff6fa8;
+      --shadow: 0 6px 20px rgba(60, 40, 120, .08);
+      --c-fest: #ff5c8a;
+      --c-award: #f5a524;
+      --c-fan: #20b486;
+      --c-broadcast: #3b82f6;
+      --c-concert: #8b5cf6;
+      --c-default: #6c5cff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #14121f;
+        --surface: #1f1c30;
+        --text: #f1eefc;
+        --muted: #a39fbd;
+        --line: #302c48;
+        --shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #14121f;
+      --surface: #1f1c30;
+      --text: #f1eefc;
+      --muted: #a39fbd;
+      --line: #302c48;
+      --shadow: 0 6px 20px rgba(0, 0, 0, .35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #6c5cff 0%, #b15cff 45%, #ff6fa8 100%);
+      color: #fff;
+      padding: 28px 20px 64px;
+    }
+    .hero svg.deco { position: absolute; right: -40px; top: -30px; width: 260px; opacity: .22; }
+    .hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+    .hero h1 { margin: 0; font-size: 26px; letter-spacing: -.5px; }
+    .hero .sub { margin: 6px 0 0; font-size: 14px; opacity: .92; }
+    .hero .fancam-btn {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+      background: rgba(255,255,255,.95); color: var(--brand); text-decoration: none;
+      font-weight: 700; font-size: 14px; padding: 9px 16px; border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    }
+    main { max-width: 760px; margin: -36px auto 0; padding: 0 14px 40px; position: relative; }
+    .toolbar {
+      background: var(--surface); border-radius: 16px; padding: 12px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filters button {
+      border: 1px solid var(--line); background: transparent; color: var(--text);
+      border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-family: inherit;
+    }
+    .filters button.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .legend { font-size: 12px; color: var(--muted); }
+    .section-title { display: flex; align-items: baseline; gap: 8px; margin: 22px 4px 10px; font-size: 15px; font-weight: 700; }
+    .section-title .count { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+    .card {
+      position: relative; display: grid; grid-template-columns: 84px 1fr; overflow: hidden;
+      background: var(--surface); border-radius: 16px; box-shadow: var(--shadow);
+      margin-bottom: 12px; cursor: pointer; transition: transform .15s ease;
+    }
+    .card:hover { transform: translateY(-2px); }
+    .card.past { opacity: .72; }
+    .card.past:hover { opacity: 1; }
+    .thumb {
+      position: relative; color: #fff; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 10px 4px; text-align: center;
+      background: linear-gradient(160deg, var(--c) 0%, color-mix(in srgb, var(--c) 55%, #000) 100%);
+      overflow: hidden;
+    }
+    .thumb svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .25; }
+    .thumb .mon { position: relative; font-size: 12px; font-weight: 600; opacity: .9; }
+    .thumb .day { position: relative; font-size: 28px; font-weight: 800; line-height: 1.1; }
+    .thumb .dow { position: relative; font-size: 11px; opacity: .9; }
+    .body { padding: 12px 14px 14px; min-width: 0; }
+    .top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .type-chip {
+      font-size: 11px; font-weight: 700; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+      padding: 3px 9px; border-radius: 999px;
+    }
+    .dday { font-size: 12px; font-weight: 700; color: var(--c); white-space: nowrap; }
+    .dday.past { color: var(--muted); }
+    .title { font-size: 16px; font-weight: 700; margin: 8px 0 4px; word-break: keep-all; }
+    .meta { font-size: 13px; color: var(--muted); word-break: keep-all; }
+    .ticket-line {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+      font-size: 12px; color: var(--text);
+    }
+    .ticket-line .pill {
+      background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px;
+    }
+    .ticket-line .pill.ok { border-color: #20b48666; color: #0f8a62; }
+    .status { font-size: 11px; color: var(--muted); margin-top: 8px; }
+    .status.official { color: #0f8a62; font-weight: 600; }
+
+    .detail { display: none; grid-column: 1 / -1; border-top: 1px solid var(--line); padding: 14px; margin: 0 -14px -14px; }
+    .card.open .detail { display: block; }
+    .card { grid-template-rows: auto; }
+    .detail-wrap { grid-column: 1 / -1; }
+    .card.open { grid-template-columns: 84px 1fr; }
+    .card.open .detail { grid-column: 1 / -1; }
+    .ticket-box {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--c) 12%, transparent), transparent);
+      border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px;
+    }
+    .kv { display: grid; grid-template-columns: 74px 1fr; gap: 6px 10px; font-size: 13px; }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; word-break: keep-all; }
+    .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 13px; font-weight: 700;
+      padding: 9px 14px; border-radius: 10px; border: 1px solid var(--c); color: var(--c); background: transparent;
+    }
+    .btn.primary { background: var(--c); color: #fff; }
+    .note { font-size: 13px; color: var(--text); margin: 6px 0 0; word-break: keep-all; }
+    .label { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 10px; }
+    .hint { font-size: 12px; color: var(--muted); }
+    .past-toggle {
+      display: block; width: 100%; margin: 20px 0 8px; padding: 13px; border: 1px dashed var(--brand);
+      background: var(--surface); border-radius: 14px; color: var(--brand); font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+    .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+    footer { text-align: center; font-size: 12px; color: var(--muted); padding: 10px 0 0; }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 22px; }
+      .card { grid-template-columns: 72px 1fr; }
+      .thumb .day { font-size: 24px; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>하투하 일정 모아보기</h1>
-    <p>하츠투하츠 공연·축제·시상식 일정 (업데이트: <span id="updated"></span>)</p>
-    <a class="fancam-btn" href="fancam.html">🎬 직캠 모아보기 →</a>
+  <header class="hero">
+    <svg class="deco" viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="100" cy="100" r="90" fill="none" stroke="#fff" stroke-width="2"/>
+      <circle cx="100" cy="100" r="60" fill="none" stroke="#fff" stroke-width="2"/>
+      <circle cx="100" cy="100" r="30" fill="#fff"/>
+    </svg>
+    <div class="hero-inner">
+      <h1>하투하 일정 모아보기</h1>
+      <p class="sub">하츠투하츠 공연·축제·시상식 · 업데이트 <span id="updated"></span></p>
+      <a class="fancam-btn" href="fancam.html">🎬 직캠 모아보기 →</a>
+    </div>
   </header>
+
   <main>
-    <div class="filters" id="filters"></div>
+    <div class="toolbar">
+      <div class="filters" id="filters"></div>
+      <div class="legend" id="legend"></div>
+    </div>
     <div id="list"></div>
+    <footer>일정은 공식 발표와 기사 기준이며, 변동될 수 있습니다. 예매 전 판매처 공지를 꼭 확인하세요.</footer>
   </main>
+
   <script>
+    const TYPE_COLOR = {
+      "축제": "var(--c-fest)",
+      "시상식": "var(--c-award)",
+      "팬 이벤트": "var(--c-fan)",
+      "방송": "var(--c-broadcast)",
+      "공연": "var(--c-concert)"
+    };
+    const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+
     let all = [];
     let currentType = "전체";
     let openKey = null;
     let showPast = false;
+
+    function colorOf(type) { return TYPE_COLOR[type] || "var(--c-default)"; }
 
     function isOfficial(status) {
       return status.indexOf("공식") !== -1 && status.indexOf("확인 필요") === -1;
@@ -64,42 +208,85 @@
       return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     }
 
-    function detailHTML(e) {
-      const ticketBlock = e.ticket_url
-        ? `<a href="${esc(e.ticket_url)}" target="_blank" rel="noopener">티켓 예매 페이지 열기</a>`
-        : `<p class="hint">링크 없음 (판매처 공지 확인 필요)</p>`;
-      const noticeBlock = e.ticket_notice
-        ? `<a href="${esc(e.ticket_notice)}" target="_blank" rel="noopener" style="background:#fff;color:#5b6cff;border:1px solid #5b6cff">공지 글 보기</a>`
-        : "";
-      const sourceBlock = e.source
-        ? `<h4>출처</h4><a href="${esc(e.source)}" target="_blank" rel="noopener">출처 글 보기</a>`
-        : "";
-      return `
-        <div>
-          <h4>티켓 판매 시간</h4>
-          <p>${esc(e.ticket_time || "미확인")}</p>
-          <h4>판매처</h4>
-          <p>${esc(e.ticket_site || "미확인")}</p>
-          <h4>티켓 링크</h4>
-          ${ticketBlock} ${noticeBlock}
-          <h4>메모</h4>
-          <p>${esc(e.notes || "")}</p>
-          ${sourceBlock}
-        </div>`;
+    // Decorative thumbnail: abstract pattern per card (no photos of artists).
+    function thumbSVG(seed) {
+      const n = seed % 3;
+      const shapes = [
+        '<circle cx="80" cy="20" r="46" fill="none" stroke="#fff" stroke-width="2"/><circle cx="10" cy="90" r="30" fill="#fff" fill-opacity=".5"/>',
+        '<path d="M0 60 Q20 30 40 60 T80 60 T120 60" fill="none" stroke="#fff" stroke-width="3"/><path d="M0 85 Q20 55 40 85 T80 85 T120 85" fill="none" stroke="#fff" stroke-width="3"/>',
+        '<rect x="50" y="-10" width="40" height="40" rx="8" fill="#fff" fill-opacity=".6" transform="rotate(20 70 10)"/><circle cx="20" cy="80" r="14" fill="#fff"/>'
+      ];
+      return `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${shapes[n]}</svg>`;
     }
 
-    function cardHTML(e, past) {
-      const key = e.date + "|" + e.title;
-      const official = isOfficial(e.status);
-      const isOpen = openKey === key;
+    function dateParts(e) {
+      const d = new Date(e.date + "T00:00:00");
+      return { mon: (d.getMonth() + 1) + "월", day: d.getDate(), dow: WEEK[d.getDay()] };
+    }
+
+    function dday(e, today) {
+      const end = e.end || e.date;
+      const diff = Math.round((new Date(e.date + "T00:00:00") - new Date(today + "T00:00:00")) / 864e5);
+      const endDiff = Math.round((new Date(end + "T00:00:00") - new Date(today + "T00:00:00")) / 864e5);
+      if (endDiff < 0) return { text: "종료", past: true };
+      if (diff <= 0 && endDiff >= 0) return { text: "진행 중", past: false };
+      return { text: "D-" + diff, past: false };
+    }
+
+    function ticketLine(e) {
+      const site = e.ticket_site && !/^해당 없음|^미확인/.test(e.ticket_site) ? e.ticket_site : "";
+      const time = e.ticket_time && !/^해당 없음|^미확인/.test(e.ticket_time) ? e.ticket_time : "";
+      if (!site && !time) return `<div class="ticket-line"><span class="pill">예매 정보 미확인</span></div>`;
+      return `<div class="ticket-line">${site ? `<span class="pill ok">🎫 ${esc(site)}</span>` : ""}${time ? `<span class="pill">⏰ ${esc(time.length > 26 ? time.slice(0, 26) + "…" : time)}</span>` : ""}</div>`;
+    }
+
+    function detailHTML(e) {
+      const hasTicketUrl = !!e.ticket_url;
+      const buttons = [];
+      if (hasTicketUrl) buttons.push(`<a class="btn primary" href="${esc(e.ticket_url)}" target="_blank" rel="noopener">🎫 예매 페이지 열기</a>`);
+      if (e.ticket_notice) buttons.push(`<a class="btn" href="${esc(e.ticket_notice)}" target="_blank" rel="noopener">📢 판매 공지</a>`);
+      if (e.source) buttons.push(`<a class="btn" href="${esc(e.source)}" target="_blank" rel="noopener">🔗 출처 글</a>`);
       return `
-          <div class="card${past ? " past" : ""}" data-key="${esc(key)}">
-            <div class="date">${esc(e.date)}${e.end ? " ~ " + esc(e.end) : ""}</div>
+        <div class="ticket-box">
+          <dl class="kv">
+            <dt>판매처</dt><dd>${esc(e.ticket_site || "미확인")}</dd>
+            <dt>판매 시간</dt><dd>${esc(e.ticket_time || "미확인")}</dd>
+            <dt>장소</dt><dd>${esc(e.place || "")}</dd>
+          </dl>
+          ${hasTicketUrl ? "" : `<p class="hint" style="margin:8px 0 0">예매 상품 페이지 링크는 아직 확인되지 않았습니다. 판매처 공지를 확인하세요.</p>`}
+        </div>
+        ${e.notes ? `<div class="label">메모</div><p class="note">${esc(e.notes)}</p>` : ""}
+        <div class="btns">${buttons.join("")}</div>`;
+    }
+
+    function cardHTML(e, today, past) {
+      const key = e.date + "|" + e.title;
+      const isOpen = openKey === key;
+      const official = isOfficial(e.status);
+      const p = dateParts(e);
+      const dd = dday(e, today);
+      const color = colorOf(e.type);
+      const rangeTxt = e.end && e.end !== e.date ? `${p.mon} ${p.day}일 ~ ${dateParts({date: e.end}).day}일` : "";
+      return `
+        <article class="card${past ? " past" : ""}${isOpen ? " open" : ""}" data-key="${esc(key)}" style="--c:${color}">
+          <div class="thumb">
+            ${thumbSVG(e.date.charCodeAt(9) + e.title.length)}
+            <div class="mon">${p.mon}</div>
+            <div class="day">${p.day}</div>
+            <div class="dow">${p.dow}요일</div>
+          </div>
+          <div class="body">
+            <div class="top-row">
+              <span class="type-chip">${esc(e.type)}</span>
+              <span class="dday${dd.past ? " past" : ""}">${esc(dd.text)}</span>
+            </div>
             <div class="title">${esc(e.title)}</div>
-            <div class="meta">${esc(e.type)} · ${esc(e.place)}</div>
-            <span class="badge ${official ? "official" : ""}">${esc(e.status)}</span>
-            <div class="detail ${isOpen ? "open" : ""}">${isOpen ? detailHTML(e) : ""}</div>
-          </div>`;
+            <div class="meta">📍 ${esc(e.place)}${rangeTxt ? " · " + rangeTxt : ""}</div>
+            ${ticketLine(e)}
+            <div class="status${official ? " official" : ""}">${official ? "✔ " : ""}${esc(e.status)}</div>
+            ${isOpen ? `<div class="detail">${detailHTML(e)}</div>` : ""}
+          </div>
+        </article>`;
     }
 
     function render() {
@@ -107,44 +294,30 @@
       const today = new Date().toISOString().slice(0, 10);
       const filtered = all.filter(e => currentType === "전체" || e.type === currentType);
       const endOf = e => e.end || e.date;
-      const upcoming = filtered.filter(e => endOf(e) >= today)
-        .sort((a, b) => a.date.localeCompare(b.date));
-      const past = filtered.filter(e => endOf(e) < today)
-        .sort((a, b) => b.date.localeCompare(a.date));
+      const upcoming = filtered.filter(e => endOf(e) >= today).sort((a, b) => a.date.localeCompare(b.date));
+      const past = filtered.filter(e => endOf(e) < today).sort((a, b) => b.date.localeCompare(a.date));
 
-      let html = upcoming.length
-        ? upcoming.map(e => cardHTML(e, false)).join("")
+      let html = `<div class="section-title">다가오는 일정 <span class="count">${upcoming.length}개</span></div>`;
+      html += upcoming.length
+        ? upcoming.map(e => cardHTML(e, today, false)).join("")
         : '<div class="empty">예정된 일정이 없습니다.</div>';
 
       if (past.length) {
-        html += `<button class="past-toggle" id="pastToggle">${showPast ? "지난 일정 숨기기 ▲" : "지난 일정 보기 (" + past.length + "개) ▼"}</button>`;
+        html += `<button class="past-toggle" id="pastToggle">${showPast ? "지난 일정 접기 ▲" : "지난 일정 보기 (" + past.length + "개) ▼"}</button>`;
         if (showPast) {
-          html += `<div class="past-heading">지난 일정</div>` + past.map(e => cardHTML(e, true)).join("");
+          html += `<div class="section-title">지난 일정 <span class="count">최신순</span></div>`;
+          html += past.map(e => cardHTML(e, today, true)).join("");
         }
       }
       list.innerHTML = html;
     }
-
-    document.getElementById("list").addEventListener("click", ev => {
-      if (ev.target.id === "pastToggle") {
-        showPast = !showPast;
-        openKey = null;
-        render();
-        return;
-      }
-      if (ev.target.tagName === "A") return;
-      const card = ev.target.closest(".card");
-      if (!card) return;
-      const key = card.dataset.key;
-      openKey = openKey === key ? null : key;
-      render();
-    });
 
     function renderFilters() {
       const types = ["전체", ...new Set(all.map(e => e.type))];
       document.getElementById("filters").innerHTML = types.map(t =>
         `<button class="${t === currentType ? "active" : ""}" data-type="${esc(t)}">${esc(t)}</button>`
       ).join("");
+      document.getElementById("legend").textContent = "카드 색은 일정 종류를 나타내요. 카드를 누르면 예매 정보가 펼쳐집니다.";
       document.querySelectorAll("#filters button").forEach(btn => {
         btn.addEventListener("click", () => {
           currentType = btn.dataset.type;
@@ -154,6 +327,21 @@
         });
       });
     }
+
+    document.getElementById("list").addEventListener("click", ev => {
+      if (ev.target.id === "pastToggle") {
+        showPast = !showPast;
+        openKey = null;
+        render();
+        return;
+      }
+      if (ev.target.closest(".detail") && ev.target.tagName === "A") return;
+      const card = ev.target.closest(".card");
+      if (!card) return;
+      const key = card.dataset.key;
+      openKey = openKey === key ? null : key;
+      render();
+    });
 
     const DATA = {"updated": "2026-11-08", "events": [{"date": "2026-10-29", "title": "연세대학교 축제 무대 (RUDE!)", "type": "축제", "place": "연세대학교 (서울)", "status": "팬 계정 게시물 확인, 공식 확인 필요", "source": "https://www.instagram.com/reel/DfE1Ym2hPjS/", "ticket_time": "해당 없음 (지난 일정)", "ticket_site": "해당 없음", "ticket_url": "", "notes": "지난 일정입니다."}, {"date": "2026-11-07", "end": "2026-11-08", "title": "제3회 코리아 그랜드 뮤직 어워즈 (2026 KGMA)", "type": "시상식", "place": "고척스카이돔 (서울)", "status": "기사 확인 (아티스트 데이 11/7, 뮤직 데이 11/8)", "source": "https://isplus.com/article/view/isp202610260195", "ticket_time": "2차 티켓: 10/27 오후 6시 오픈 (지남)", "ticket_site": "NOL(놀)", "ticket_url": "https://nol.yanolja.com/ticket/products/26013920", "notes": "2차 티켓은 플로어석 대상입니다. 10/27 18:00 오픈 공지 기사와 NOL 공연 페이지 링크입니다. 판매 기간은 지났습니다.", "ticket_notice": "https://isplus.com/article/view/isp202610260195"}, {"date": "2026-11-14", "end": "2026-11-15", "title": "2026 멜론 뮤직 어워드 (MMA)", "type": "시상식", "place": "고척스카이돔 (서울)", "status": "기사 확인 (11/14~15, 각 오후 6시)", "source": "https://www.wikitree.co.kr/articles/1167304", "ticket_time": "1차: 10/19 20:00~23:59 (멜론 VIP·GOLD 등), 2차: 10/22 20:00 (멜론 이용권 회원, 계단석·잔여석). 모두 지남", "ticket_site": "멜론티켓", "ticket_url": "https://ticket.melon.com/", "notes": "이미 지난 예매 기간입니다. 예매 링크는 멜론티켓 메인이며, 공지 기사에서 시간 정보를 볼 수 있습니다.", "ticket_notice": "https://www.wikitree.co.kr/articles/1167304"}, {"date": "2026-11-20", "title": "2026 MAMA AWARDS 오사카 (MAMA)", "type": "시상식", "place": "교세라 돔 오사카 (일본)", "status": "기사 확인 (11/20 CHAPTER 1 출연 라인업에 하투하 포함, 복수 매체 보도)", "source": "https://www.soompi.com/article/1877509wpp/2026-mama-awards-announces-first-lineup", "ticket_time": "미확인", "ticket_site": "미확인", "ticket_url": "", "notes": "11/20~21 이틀간 진행. 하투하는 11/20 CHAPTER 1 출연 (InMusic 10/15, Esquire Korea 10/21 라인업 보도). 티켓 정보 미확인.", "end": "2026-11-21"}, {"date": "2026-11-22", "end": "2026-11-23", "title": "JAPAN 1st Fan Event 'READY! S2U'", "type": "팬 이벤트", "place": "有明アリーナ / 아리아케 아레나 (도쿄, 일본)", "status": "티켓 판매처 페이지 확인 (11/22 18:00 시작, 11/23 16:00 시작). 공식 판매 일정 확인 필요", "source": "https://www.japanconcerttickets.com/event/hearts2hearts-in-tokyo-2026-11-22/", "ticket_time": "미확인 (공식 공지: https://hearts2heartsofficial.jp/news/20260920/ 미확인)", "ticket_site": "공식 홈페이지 (hearts2heartsofficial.jp)", "ticket_url": "https://hearts2heartsofficial.jp/", "notes": "11/22 (일) 개장 17:00 / 시작 18:00, 11/23 (월) 개장 15:00 / 시작 16:00. 공식 가격 JPY 12,800 (japanconcerttickets 표기). 판매 일정은 공식 공지 미확인. 티켓 상품 페이지 URL 미확인으로 메인 사이트 링크를 넣었습니다. 리셀(Viagogo, ticket.co.jp, ticketjam)은 참고용입니다.", "ticket_notice": "https://hearts2heartsofficial.jp/news/20260920/"}, {"date": "2026-11-28", "title": "Winter Special Live at UNIVERSAL STUDIOS JAPAN (Osaka)", "type": "공연", "place": "유니버설 스튜디오 재팬 그라멜시 파크 (오사카, 일본)", "status": "티켓 판매처 페이지 확인 (11/28 11:00 시작). 공식 판매 일정 확인 필요", "source": "https://www.japanconcerttickets.com/event/hearts2hearts-in-osaka-2026-11-28/", "ticket_time": "미확인 (공식 공지: https://hearts2heartsofficial.jp/news/20260925/ 미확인)", "ticket_site": "공식 홈페이지 (hearts2heartsofficial.jp)", "ticket_url": "https://hearts2heartsofficial.jp/", "notes": "개장 9:45 / 시작 11:00. 1일 스튜디오 패스 포함 티켓만 판매 (단독 라이브 티켓 없음). 공식 가격 JPY 12,900. 티켓 상품 페이지 URL 미확인으로 메인 사이트 링크를 넣었습니다.", "ticket_notice": "https://hearts2heartsofficial.jp/news/20260925/"}, {"date": "2026-12-05", "title": "AAA 2026", "type": "시상식", "place": "가오슝 (대만)", "status": "팬 달력 기준, 공식 확인 필요", "source": "", "ticket_time": "미확인", "ticket_site": "미확인", "ticket_url": "", "notes": ""}, {"date": "2026-12-12", "title": "2026 MUSIC BANK GLOBAL FESTIVAL IN JAPAN (Day 1)", "type": "축제", "place": "일본 국립경기장", "status": "공식 발표 확인 (Soompi)", "source": "https://www.soompi.com/article/1880199wpp/2026-music-bank-global-festival-in-japan-announces-additional-lineup", "ticket_time": "선행: 9/11~9/23 (2일권), 9/26~10/4, 10/9~10/12 (1일권). 일반 판매일 미발표", "ticket_site": "공식 판매처 미확인 (NOL, 멜론 링크 못 찾음)", "ticket_url": "https://ticketjam.jp/tickets/music-bank-fes", "notes": "링크는 리셀 사이트 참고용입니다. 공식 판매 공지를 확인하세요."}, {"date": "2026-12-24", "end": "2026-12-25", "title": "2026 SBS 가요대전 (겨울)", "type": "방송", "place": "서울", "status": "팬 달력 기준, 공식 확인 필요", "source": "", "ticket_time": "미확인 (방청 응모 공지 확인 필요)", "ticket_site": "미확인", "ticket_url": "", "notes": "여름 가요대전 참여 공지는 위버스에 있었습니다 (8/9)."}, {"date": "2027-06-03", "end": "2027-06-05", "title": "프리마베라 사운드 2027", "type": "축제", "place": "파크 델 포럼, 바르셀로나 (스페인)", "status": "공식 발표 확인 (SM엔터테인먼트, 10/6)", "source": "https://www.insight.co.kr/news/576687", "ticket_time": "팬 세일 신청 10/5~10/7, 팬 세일 10/8 11:00 CEST, 일반 판매 10/9 11:00 CEST (한국 18:00). 모두 지남", "ticket_site": "팬 세일 신청: 공식 사이트, 일반 판매: Fever", "ticket_url": "https://feverup.com/m/669452/en", "notes": "일반 전체 패스 €350, VIP €545. 공식 사이트: https://www.primaverasound.com/en/home"}]};
     all = DATA.events;
